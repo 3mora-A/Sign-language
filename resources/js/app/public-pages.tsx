@@ -137,26 +137,6 @@ export function LandingPage() {
                                 {language === 'ar' ? 'استكشف مسار التحليل' : 'Explore inference flow'}
                             </ButtonLink>
                         </div>
-                        <div className="mt-10 grid gap-4 md:grid-cols-3">
-                            <StatCard
-                                icon="brain"
-                                label={language === 'ar' ? 'مهام التصنيف' : 'Classification tasks'}
-                                value="2"
-                                detail={language === 'ar' ? 'تصنيف الإشارة وتصنيف المشاعر في خط واحد.' : 'Sign and emotion classification within one pipeline.'}
-                            />
-                            <StatCard
-                                icon="sparkles"
-                                label={language === 'ar' ? 'متوسط زمن التحليل' : 'Average analysis latency'}
-                                value="~640ms"
-                                detail={language === 'ar' ? 'من رفع العينة إلى عرض المخرجات الأساسية.' : 'From sample submission to primary output rendering.'}
-                            />
-                            <StatCard
-                                icon="globe"
-                                label={language === 'ar' ? 'الدعم اللغوي' : 'Language support'}
-                                value="AR · EN"
-                                detail={language === 'ar' ? 'واجهة كاملة بعربي وإنجليزي.' : 'Full Arabic and English UI.'}
-                            />
-                        </div>
                     </motion.div>
 
                     <motion.div variants={motionVariants.pageTransition} initial="initial" animate="animate">
