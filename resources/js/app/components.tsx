@@ -770,9 +770,9 @@ export function DashboardFrame({ children }: { children: ReactNode }) {
             </aside>
 
             <div className="dashboard-main" dir={direction}>
-        <div className="panel-soft flex items-center justify-between gap-4 rounded-[1.75rem] border border-white/[0.08] px-5 py-4 shadow-inner">
-                    <div className="flex min-w-0 items-center gap-3">
-                        <ActionButton variant="ghost" className="h-11 w-11 shrink-0 rounded-2xl px-0 text-[var(--primary)] lg:hidden" onClick={() => setMobileOpen(true)}>
+                <div className="mb-6 flex items-center justify-between gap-4 lg:justify-end">
+                    <div className="flex min-w-0 items-center gap-3 lg:hidden">
+                        <ActionButton variant="ghost" className="h-11 w-11 shrink-0 rounded-2xl px-0 text-[var(--primary)]" onClick={() => setMobileOpen(true)}>
                             <Menu className="h-5 w-5 shrink-0 text-[var(--primary)]" strokeWidth={2.2} />
                         </ActionButton>
                     </div>

@@ -4,7 +4,6 @@ import { useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
-    AnalysisHeroCard,
     AppIcon,
     Badge,
     ButtonLink,
@@ -118,7 +117,6 @@ function AuthShell({
 
 export function LandingPage() {
     const { language, boot } = useAppContext();
-    const latestAnalysis = boot.latestAnalysis ?? boot.history[0] ?? null;
 
     return (
         <div className="space-y-0">
@@ -171,32 +169,28 @@ export function LandingPage() {
                     </motion.div>
 
                     <motion.div variants={motionVariants.pageTransition} initial="initial" animate="animate">
-                        {latestAnalysis ? (
-                            <AnalysisHeroCard analysis={latestAnalysis} />
-                        ) : (
-                            <SpotlightCard noHover className="relative flex flex-col justify-center overflow-hidden !p-0 shadow-[0_24px_80px_-16px_rgba(0,0,0,0.45)] min-h-[22rem]">
-                                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_80%_-10%,rgb(var(--primary-rgb)/0.12),transparent_52%)]" />
-                                <div className="relative z-[1] p-6 sm:p-8 xl:p-10">
-                                    <div className="eyebrow">{language === 'ar' ? 'مكوّنات النظام' : 'System overview'}</div>
-                                    <h3 className="mt-5 text-3xl font-extrabold sm:text-4xl">
-                                        {language === 'ar' ? 'مسار تحليل متكامل من الإدخال حتى التقرير النهائي' : 'A complete inference pipeline from input to final report'}
-                                    </h3>
-                                    <div className="mt-8 grid gap-4">
-                                    {workflowSteps.slice(0, 3).map((step) => (
-                                        <div key={copyFor(language, step.title)} className="group flex items-start gap-4 rounded-2xl border border-white/[0.04] bg-white/[0.02] p-4 transition hover:border-[rgb(var(--primary-rgb)/0.2)] hover:bg-white/[0.04]">
-                                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-[var(--primary)] transition group-hover:scale-105 group-hover:bg-[rgb(var(--primary-rgb)/0.1)]">
-                                                <AppIcon name={step.icon} className="h-5 w-5" />
-                                            </div>
-                                            <div>
-                                                <p className="font-semibold">{copyFor(language, step.title)}</p>
-                                                <p className="body-soft mt-1 text-sm">{copyFor(language, step.description)}</p>
-                                            </div>
+                        <SpotlightCard noHover className="relative flex flex-col justify-center overflow-hidden !p-0 shadow-[0_24px_80px_-16px_rgba(0,0,0,0.45)] min-h-[22rem]">
+                            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_80%_-10%,rgb(var(--primary-rgb)/0.12),transparent_52%)]" />
+                            <div className="relative z-[1] p-6 sm:p-8 xl:p-10">
+                                <div className="eyebrow">{language === 'ar' ? 'مكوّنات النظام' : 'System overview'}</div>
+                                <h3 className="mt-5 text-3xl font-extrabold sm:text-4xl">
+                                    {language === 'ar' ? 'مسار تحليل متكامل من الإدخال حتى التقرير النهائي' : 'A complete inference pipeline from input to final report'}
+                                </h3>
+                                <div className="mt-8 grid gap-4">
+                                {workflowSteps.slice(0, 3).map((step) => (
+                                    <div key={copyFor(language, step.title)} className="group flex items-start gap-4 rounded-2xl border border-white/[0.04] bg-white/[0.02] p-4 transition hover:border-[rgb(var(--primary-rgb)/0.2)] hover:bg-white/[0.04]">
+                                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-[var(--primary)] transition group-hover:scale-105 group-hover:bg-[rgb(var(--primary-rgb)/0.1)]">
+                                            <AppIcon name={step.icon} className="h-5 w-5" />
                                         </div>
-                                    ))}
+                                        <div>
+                                            <p className="font-semibold">{copyFor(language, step.title)}</p>
+                                            <p className="body-soft mt-1 text-sm">{copyFor(language, step.description)}</p>
+                                        </div>
                                     </div>
+                                ))}
                                 </div>
-                            </SpotlightCard>
-                        )}
+                            </div>
+                        </SpotlightCard>
                     </motion.div>
                 </div>
             </section>
