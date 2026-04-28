@@ -623,7 +623,7 @@ export function HistoryPage() {
 
                                 {expandedId === entry.id && (
                                     <div className="mt-4 border-t border-white/[0.08] p-1 pt-6 animate-in fade-in slide-in-from-top-4 duration-500">
-                                        <ResultsSection analysis={entry} showHeader={false} />
+                                        <ResultsSection analysis={entry} showHeader={false} showHero={false} />
                                     </div>
                                 )}
                             </SpotlightCard>

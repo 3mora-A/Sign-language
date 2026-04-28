@@ -411,7 +411,7 @@ function EmptyPreviewPlaceholder({ language }: { language: 'ar' | 'en' }) {
     );
 }
 
-export function ResultsSection({ analysis, showHeader = false, showDetails = true }: { analysis?: AnalysisResult | null, showHeader?: boolean, showDetails?: boolean }) {
+export function ResultsSection({ analysis, showHeader = false, showHero = true, showDetails = true }: { analysis?: AnalysisResult | null, showHeader?: boolean, showHero?: boolean, showDetails?: boolean }) {
     const { language } = useAppContext();
 
     if (!analysis) {
@@ -430,7 +430,7 @@ export function ResultsSection({ analysis, showHeader = false, showDetails = tru
             )}
 
             <div className="space-y-6">
-                <AnalysisHeroCard analysis={analysis} />
+                {showHero && <AnalysisHeroCard analysis={analysis} />}
 
                 {showDetails && (
                     <div className="grid min-h-0 gap-6 xl:items-stretch">
