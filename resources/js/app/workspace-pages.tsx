@@ -714,7 +714,7 @@ export function SettingsPage() {
                 }
             />
 
-            <div className="grid gap-6 xl:grid-cols-2">
+            <div className="mx-auto max-w-2xl">
                 <SpotlightCard>
                     <SectionTitle
                         icon={<Palette className="h-4 w-4" />}
@@ -751,95 +751,9 @@ export function SettingsPage() {
                             }
                         />
 
-                        <div className="panel-soft flex items-center justify-between gap-4 rounded-2xl p-4">
-                            <div className="flex items-center gap-3">
-                                <span className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-white/5 text-[var(--primary)]">
-                                    <TypeIcon className="h-4 w-4" />
-                                </span>
-                                <div>
-                                    <p className="font-semibold">
-                                        {language === 'ar' ? 'المظهر الحالي' : 'Resolved theme'}
-                                    </p>
-                                    <p className="body-soft text-sm">
-                                        {resolvedTheme === 'dark'
-                                            ? copyFor(language, settingsLabels.dark)
-                                            : copyFor(language, settingsLabels.light)}
-                                    </p>
-                                </div>
-                            </div>
-                            <Badge
-                                tone={resolvedTheme === 'dark' ? 'info' : 'success'}
-                                text={resolvedTheme === 'dark' ? 'Dark' : 'Light'}
-                            />
-                        </div>
                     </div>
                 </SpotlightCard>
 
-                <div className="space-y-4">
-                    <div className="panel-soft rounded-3xl p-5">
-                        <SectionTitle
-                            icon={<SettingsIcon className="h-4 w-4" />}
-                            title={
-                                language === 'ar'
-                                    ? 'الوصول والتجربة'
-                                    : 'Accessibility & experience'
-                            }
-                        />
-                        <div className="space-y-3">
-                            <ToggleCard
-                                checked={settings.reducedMotion}
-                                onChange={(value) => trackUpdate({ reducedMotion: value })}
-                                title={language === 'ar' ? 'تقليل الحركة' : 'Reduce motion'}
-                                description={
-                                    language === 'ar'
-                                        ? 'مفيد للحساسية البصرية أو لمن يفضل انتقالات أكثر هدوءًا.'
-                                        : 'Helpful for motion sensitivity or anyone who prefers calmer transitions.'
-                                }
-                            />
-                            <ToggleCard
-                                checked={settings.accessibilityMode}
-                                onChange={(value) => trackUpdate({ accessibilityMode: value })}
-                                title={language === 'ar' ? 'وضع الوصول' : 'Accessibility mode'}
-                                description={
-                                    language === 'ar'
-                                        ? 'يزيد وضوح التركيز وبعض إشارات التفاعل البصري.'
-                                        : 'Enhances focus visibility and some interaction cues.'
-                                }
-                            />
-                        </div>
-                    </div>
-
-                    <div className="panel-soft rounded-3xl p-5">
-                        <SectionTitle
-                            icon={<Shield className="h-4 w-4" />}
-                            title={
-                                language === 'ar' ? 'الخصوصية والبيانات' : 'Privacy & data'
-                            }
-                        />
-                        <div className="space-y-3">
-                            <ToggleCard
-                                checked={settings.notifications}
-                                onChange={(value) => trackUpdate({ notifications: value })}
-                                title={language === 'ar' ? 'الإشعارات' : 'Notifications'}
-                                description={
-                                    language === 'ar'
-                                        ? 'استعد لتلقي تنبيهات عن اكتمال التحليل أو حالة النظام.'
-                                        : 'Get notified about completed analyses and system events.'
-                                }
-                            />
-                            <ToggleCard
-                                checked={settings.saveHistory}
-                                onChange={(value) => trackUpdate({ saveHistory: value })}
-                                title={language === 'ar' ? 'حفظ السجل محليًا' : 'Save history locally'}
-                                description={
-                                    language === 'ar'
-                                        ? 'يحافظ على آخر نتيجة داخل المتصفح إلى جانب السجل القادم من الخادم.'
-                                        : 'Keeps the latest result in your browser alongside the server-backed history.'
-                                }
-                            />
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     );
