@@ -1,0 +1,17 @@
+fastapi==0.135.1
+uvicorn==0.41.0
+python-multipart==0.0.22
+
+numpy==1.26.4
+opencv-contrib-python==4.8.1.78
+mediapipe==0.10.14
+tensorflow==2.15.1
+protobuf==4.25.3
+scikit-learn==1.7.2
+joblib==1.5.3
+
+torch==2.11.0
+torchvision==0.26.0
+Pillow==12.1.1
+
+tqdm==4.67.3
