@@ -775,10 +775,6 @@ export function DashboardFrame({ children }: { children: ReactNode }) {
                         <ActionButton variant="ghost" className="h-11 w-11 shrink-0 rounded-2xl px-0 text-[var(--primary)] lg:hidden" onClick={() => setMobileOpen(true)}>
                             <Menu className="h-5 w-5 shrink-0 text-[var(--primary)]" strokeWidth={2.2} />
                         </ActionButton>
-                        <div className="min-w-0">
-                            <p className="body-muted text-xs uppercase tracking-[0.28em]">{language === 'ar' ? 'المسار الحالي' : 'Current route'}</p>
-                            <p dir="ltr" className="mt-1 truncate font-semibold text-start">{location.pathname}</p>
-                        </div>
                     </div>
                     <div className="flex shrink-0 items-center gap-2">
                         <LanguageSwitcher />
