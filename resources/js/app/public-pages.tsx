@@ -81,15 +81,6 @@ function AuthShell({
                                 </SpotlightCard>
                             ))}
                         </div>
-
-                        <div className="panel-soft mt-8 rounded-[1.8rem] p-5">
-                            <p className="text-sm font-semibold text-[var(--primary)]">{language === 'ar' ? 'حول النظام' : 'About the system'}</p>
-                            <p className="body-soft mt-3 leading-7">
-                                {language === 'ar'
-                                    ? 'النظام مبني على Laravel لإدارة الجلسات والمستخدمين، وعلى Python لتشغيل نماذج التعلم العميق المسؤولة عن تصنيف الإشارة والمشاعر.'
-                                    : 'The system is built on Laravel for session and user management, and on Python for running the deep learning models responsible for sign and emotion classification.'}
-                            </p>
-                        </div>
                     </div>
                 </motion.div>
 
@@ -163,7 +154,7 @@ export function LandingPage() {
                                 icon="globe"
                                 label={language === 'ar' ? 'الدعم اللغوي' : 'Language support'}
                                 value="AR · EN"
-                                detail={language === 'ar' ? 'واجهة كاملة بعربي وإنجليزي مع RTL/LTR.' : 'Full Arabic and English UI with RTL/LTR support.'}
+                                detail={language === 'ar' ? 'واجهة كاملة بعربي وإنجليزي.' : 'Full Arabic and English UI.'}
                             />
                         </div>
                     </motion.div>

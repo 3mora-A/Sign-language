@@ -43,15 +43,6 @@ export const landingHighlights: FeatureCard[] = [
             'Laravel handles accounts, sessions and history while Python runs the deep models and processing services.',
         ),
     },
-    {
-        icon: 'globe',
-        tone: 'warning',
-        title: createCopy('واجهة بحثية ثنائية اللغة', 'Bilingual research-grade UI'),
-        description: createCopy(
-            'دعم عربي وإنجليزي كامل مع RTL/LTR، مصممة لعرض المخرجات الإحصائية بشكل واضح.',
-            'Full Arabic and English support with RTL/LTR, designed to surface statistical outputs clearly.',
-        ),
-    },
 ];
 
 export const workflowSteps: WorkflowStep[] = [
