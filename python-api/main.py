@@ -25,20 +25,17 @@ from typing import List, Optional
 
 import numpy as np
 
-# نستورد أدوات استخراج الخصائص الخاصة بمودل المشاعر.
-from emotion.features import (
+# نستورد طبقة المشاعر من باكيج واحد واضح: استخراج الخصائص + تشغيل المودل.
+from emotion import (
     DEFAULT_NUM_FRAMES as DEFAULT_EMOTION_NUM_FRAMES,
+    EmotionModule,
     extract_vector_from_media_path,
     load_feature_extractor as load_emotion_feature_extractor,
 )
-# هذا الكلاس مسؤول عن تحميل المودل المحفوظ وتشغيل التنبؤ.
-from emotion.module import EmotionModule
 
 
 # مجلدات العمل الأساسية الخاصة بخدمة الـ API.
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-ARTIFACTS_DIR = os.path.join(BASE_DIR, "artifacts")
-MODELS_DIR = os.path.join(ARTIFACTS_DIR, "models")
 RUNTIME_DIR = os.path.join(BASE_DIR, "runtime")
 TEMP_DIR = os.path.join(RUNTIME_DIR, "temp")
 CACHE_DIR = os.path.join(RUNTIME_DIR, "cache")
@@ -417,7 +414,7 @@ async def predict(
 async def predict_emotion_vector(file: UploadFile = File(...)):
     """مسار بديل للتنبؤ عندما يكون الإدخال vector جاهز وليس media file."""
     if not config.USE_EMOTION_SVM:
-        raise HTTPException(status_code=503, detail="Emotion model artifacts are not available")
+        raise HTTPException(status_code=503, detail="Emotion model files are not available")
 
     contents = await file.read()
     raw_vector = parse_emotion_vector_bytes(contents, file.filename or "emotion_vector.npy")

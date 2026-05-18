@@ -1,12 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""سكربت مساعد لاختبار مودل المشاعر يدويًا.
 
-يمكن استخدامه بثلاث طرق:
-- أخذ sample جاهز من X.npy
-- قراءة vector محفوظ من ملف
-- استخراج vector من صورة أو فيديو ثم تشغيل المودل عليه
-"""
+
+# تختار مصدر الإدخال
+# ↓
+# يحضر feature vector
+# ↓
+# يحمل EmotionModule
+# ↓
+# يشغل المودل
+# ↓
+# يطبع النتيجة في terminal
+
 
 import argparse
 import sys
