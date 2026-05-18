@@ -76,8 +76,6 @@ function buildClientFailureAnalysis(file: File, language: Language, message?: st
         framesAnalyzed: 0,
         latencyMs: 0,
         confidence: 0,
-        gestureKey: 'unknown',
-        gestureLabel: { ar: 'غير متوفر', en: 'Unavailable' },
         emotionKey: 'unknown',
         emotionLabel: { ar: 'غير متوفر', en: 'Unavailable' },
         summary: {

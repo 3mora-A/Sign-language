@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Emotion;
-use App\Models\Gesture;
 use App\Models\Prediction;
 use App\Models\User;
 use App\Models\Video;
@@ -45,7 +44,7 @@ class MediaController extends Controller
         $video = $this->storeUploadedMedia($file, $filename, $fileContents);
         $result = $this->analyzeWithPython($filename, $fileContents);
         $this->persistAnalysis($video, $result);
-        $video->load(['prediction.gesture', 'prediction.emotion']);
+        $video->load(['prediction.emotion']);
 
         $analysis = $this->formatAnalysisPayload($result, $video, $filename);
 
@@ -181,22 +180,9 @@ class MediaController extends Controller
         }
 
         DB::transaction(function () use ($video, $result): void {
-            $gestureValue = $this->normalizeText($result['gesture'] ?? 'unknown', 'unknown');
             $emotionValue = $this->normalizeText($result['emotion'] ?? 'unknown', 'unknown');
             $confidenceValue = $result['emotion_confidence'] ?? $result['confidence'] ?? null;
-
-            $gestureKey = Str::lower($gestureValue);
             $emotionKey = Str::lower($emotionValue);
-
-            $gesture = Gesture::firstOrCreate(
-                [
-                    'label' => $gestureValue,
-                    'language' => (string) config('signlang.defaults.gesture_language', 'ArSL'),
-                ],
-                [
-                    'description' => $this->gestureLabel($gestureKey, $gestureValue)['en'],
-                ]
-            );
 
             $emotion = Emotion::firstOrCreate(
                 [
@@ -210,14 +196,12 @@ class MediaController extends Controller
             Prediction::updateOrCreate(
                 ['video_id' => $video->id],
                 [
-                    'gesture_id' => $gesture->id,
                     'emotion_id' => $emotion->id,
                     'confidence' => $this->normalizePercentage($confidenceValue),
                     'emotion_confidence' => $this->normalizePercentage($confidenceValue),
                     'frames_analyzed' => $this->resolveFramesAnalyzed($result),
                     'latency_ms' => $this->resolveLatencyMs($result),
                     'emotion_source' => $this->normalizeNullableText($result['emotion_source'] ?? null),
-                    'gesture_alternatives' => $this->normalizePredictionList($result['top_predictions'] ?? [], 'gesture'),
                     'emotion_top_predictions' => $this->normalizePredictionList($result['emotion_top_predictions'] ?? [], 'emotion'),
                     'raw_response' => $result,
                 ]
@@ -234,10 +218,6 @@ class MediaController extends Controller
     private function formatAnalysisPayload(array $result, Video $video, string $filename): array
     {
         $prediction = $video->prediction;
-        $gestureValue = $this->normalizeText(
-            $result['gesture'] ?? $result['emotion'] ?? $prediction?->gesture?->label ?? $video->result ?? 'unknown',
-            'unknown'
-        );
         $emotionValue = $this->normalizeText(
             $result['emotion'] ?? $prediction?->emotion?->name ?? $video->result ?? 'unknown',
             'unknown'
@@ -269,8 +249,6 @@ class MediaController extends Controller
             'framesAnalyzed' => $framesAnalyzed,
             'latencyMs' => $latencyMs,
             'confidence' => $confidence,
-            'gestureKey' => $emotionKey,
-            'gestureLabel' => $emotionLabel,
             'emotionKey' => $emotionKey,
             'emotionLabel' => $emotionLabel,
             'summary' => $this->buildSummary($video, $emotionKey, $isFailure),
@@ -304,9 +282,9 @@ class MediaController extends Controller
             return $storedAlternatives;
         }
 
-        $resultAlternatives = collect($result['emotion_top_predictions'] ?? $result['top_predictions'] ?? [])
+        $resultAlternatives = collect($result['emotion_top_predictions'] ?? [])
             ->map(function (array $prediction) {
-                $value = $this->normalizeText($prediction['emotion'] ?? $prediction['gesture'] ?? 'unknown', 'unknown');
+                $value = $this->normalizeText($prediction['emotion'] ?? 'unknown', 'unknown');
                 $key = Str::lower($value);
 
                 return [
@@ -526,22 +504,6 @@ class MediaController extends Controller
     private function isImageFilename(string $filename): bool
     {
         return Str::endsWith(Str::lower($filename), ['.png', '.jpg', '.jpeg', '.gif']);
-    }
-
-    private function gestureLabel(string $gestureKey, ?string $fallback = null): array
-    {
-        $labels = [
-            'fine' => ['ar' => 'أنا بخير', 'en' => "I'm fine"],
-            'hello' => ['ar' => 'مرحبًا', 'en' => 'Hello'],
-            'thanks' => ['ar' => 'شكرًا', 'en' => 'Thank you'],
-            'love' => ['ar' => 'أحبك', 'en' => 'I love you'],
-            'happy' => ['ar' => 'أنا سعيد', 'en' => 'I am happy'],
-            'help' => ['ar' => 'أحتاج مساعدة', 'en' => 'I need help'],
-            'stop' => ['ar' => 'توقف', 'en' => 'Stop'],
-            'unknown' => ['ar' => $fallback ?: 'غير معروف', 'en' => $fallback ? Str::headline($fallback) : 'Unknown'],
-        ];
-
-        return $labels[$gestureKey] ?? ['ar' => $fallback ?: 'إشارة غير معروفة', 'en' => $fallback ? Str::headline($fallback) : 'Unknown sign'];
     }
 
     private function emotionLabel(string $emotionKey): array

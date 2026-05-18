@@ -17,7 +17,6 @@ const defaultBoot: BootPayload = {
         upload: '/upload',
         live: '/live',
         results: '/results',
-        dictionary: '/dictionary',
         history: '/history',
         settings: '/settings',
         profile: '/profile',
@@ -28,7 +27,7 @@ const defaultBoot: BootPayload = {
     latestAnalysis: null,
     history: [],
     dashboard: {
-        stats: { analyses: 128, successRate: 98.4, avgLatency: 640, activeModels: 3 },
+        stats: { analyses: 128, successRate: 98.4, avgLatency: 640, activeModels: 1 },
         systemStatus: [],
     },
     admin: null,

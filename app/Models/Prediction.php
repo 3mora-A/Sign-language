@@ -9,14 +9,12 @@ class Prediction extends Model
 {
     protected $fillable = [
         'video_id',
-        'gesture_id',
         'emotion_id',
         'confidence',
         'emotion_confidence',
         'frames_analyzed',
         'latency_ms',
         'emotion_source',
-        'gesture_alternatives',
         'emotion_top_predictions',
         'raw_response',
     ];
@@ -26,7 +24,6 @@ class Prediction extends Model
         'emotion_confidence' => 'float',
         'frames_analyzed' => 'integer',
         'latency_ms' => 'integer',
-        'gesture_alternatives' => 'array',
         'emotion_top_predictions' => 'array',
         'raw_response' => 'array',
     ];
@@ -34,11 +31,6 @@ class Prediction extends Model
     public function video(): BelongsTo
     {
         return $this->belongsTo(Video::class);
-    }
-
-    public function gesture(): BelongsTo
-    {
-        return $this->belongsTo(Gesture::class);
     }
 
     public function emotion(): BelongsTo

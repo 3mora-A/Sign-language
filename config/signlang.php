@@ -21,6 +21,5 @@ return [
 
     'defaults' => [
         'fallback_user_id' => (int) env('ANALYSIS_FALLBACK_USER_ID', 1),
-        'gesture_language' => env('DEFAULT_GESTURE_LANGUAGE', 'ArSL'),
     ],
 ];

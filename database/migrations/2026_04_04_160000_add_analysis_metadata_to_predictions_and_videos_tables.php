@@ -17,8 +17,7 @@ return new class extends Migration
             $table->unsignedInteger('frames_analyzed')->nullable()->after('emotion_confidence');
             $table->unsignedInteger('latency_ms')->nullable()->after('frames_analyzed');
             $table->string('emotion_source')->nullable()->after('latency_ms');
-            $table->json('gesture_alternatives')->nullable()->after('emotion_source');
-            $table->json('emotion_top_predictions')->nullable()->after('gesture_alternatives');
+            $table->json('emotion_top_predictions')->nullable()->after('emotion_source');
             $table->json('raw_response')->nullable()->after('emotion_top_predictions');
         });
     }
@@ -31,7 +30,6 @@ return new class extends Migration
                 'frames_analyzed',
                 'latency_ms',
                 'emotion_source',
-                'gesture_alternatives',
                 'emotion_top_predictions',
                 'raw_response',
             ]);

@@ -24,8 +24,6 @@ export interface AnalysisResult {
     framesAnalyzed: number;
     latencyMs: number;
     confidence: number;
-    gestureKey: string;
-    gestureLabel: LocalizedText;
     emotionKey: string;
     emotionLabel: LocalizedText;
     summary: LocalizedText;
@@ -57,7 +55,6 @@ export interface BootPayload {
         upload: string;
         live: string;
         results: string;
-        dictionary: string;
         history: string;
         settings: string;
         profile: string;
@@ -122,15 +119,6 @@ export interface WorkflowStep {
     title: LocalizedText;
     description: LocalizedText;
     icon: string;
-}
-
-export interface DictionaryEntry {
-    id: string;
-    title: LocalizedText;
-    category: LocalizedText;
-    summary: LocalizedText;
-    emotionHint: LocalizedText;
-    difficulty: 'easy' | 'medium' | 'advanced';
 }
 
 export interface QuickAction {

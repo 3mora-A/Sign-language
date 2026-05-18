@@ -38,12 +38,10 @@ from emotion import (
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 RUNTIME_DIR = os.path.join(BASE_DIR, "runtime")
 TEMP_DIR = os.path.join(RUNTIME_DIR, "temp")
-CACHE_DIR = os.path.join(RUNTIME_DIR, "cache")
 LOG_PATH = os.path.join(RUNTIME_DIR, "api_server.log")
 
-# نتأكد أن مجلدات الملفات المؤقتة والكاش موجودة قبل بدء التشغيل.
+# نتأكد أن مجلد الملفات المؤقتة موجود قبل بدء التشغيل.
 os.makedirs(TEMP_DIR, exist_ok=True)
-os.makedirs(CACHE_DIR, exist_ok=True)
 
 import sys
 
@@ -98,7 +96,6 @@ class Config:
     - الحد الأقصى لحجم الملف
     - الامتدادات المسموحة
     - عدد الإطارات المستخدمة عند تحليل الفيديو
-    - هل نفعّل الكاش أم لا
     """
 
     MAX_FILE_SIZE = 100 * 1024 * 1024
@@ -106,8 +103,6 @@ class Config:
     SUPPORTED_VIDEOS = {".mp4", ".avi", ".mov", ".mkv", ".webm"}
     SUPPORTED_VECTOR_FILES = {".npy", ".csv", ".txt", ".json"}
     EMOTION_NUM_SAMPLES = DEFAULT_EMOTION_NUM_FRAMES
-    CACHE_ENABLED = True
-    CACHE_VERSION = 1
     USE_EMOTION_SVM = emotion_inference.loaded
 
 
@@ -184,29 +179,6 @@ def predict_emotion_from_media_path(file_path: str, num_frames: int | None = Non
     return result
 
 
-class PredictionCache:
-    """كاش بسيط لتجنب إعادة تحليل نفس الملف أكثر من مرة."""
-
-    def __init__(self, cache_dir=CACHE_DIR):
-        self.cache_dir = cache_dir
-        os.makedirs(cache_dir, exist_ok=True)
-
-    def get_cached_result(self, file_hash: str) -> Optional[dict]:
-        cache_file = os.path.join(self.cache_dir, f"{file_hash}_v{config.CACHE_VERSION}.json")
-        if os.path.exists(cache_file):
-            with open(cache_file, "r", encoding="utf-8") as handle:
-                return json.load(handle)
-        return None
-
-    def cache_result(self, file_hash: str, result: dict):
-        cache_file = os.path.join(self.cache_dir, f"{file_hash}_v{config.CACHE_VERSION}.json")
-        with open(cache_file, "w", encoding="utf-8") as handle:
-            json.dump(result, handle, ensure_ascii=False)
-
-
-cache = PredictionCache() if config.CACHE_ENABLED else None
-
-
 def build_compatibility_payload(file_ext: str, started_at: float) -> dict:
     """بناء payload ابتدائي متوافق مع الشكل الذي تتوقعه Laravel."""
     return {
@@ -214,29 +186,28 @@ def build_compatibility_payload(file_ext: str, started_at: float) -> dict:
         "file_type": "image" if file_ext in config.SUPPORTED_IMAGES else "video",
         "processing_time": round(time.time() - started_at, 2),
         "frames_analyzed": 0,
-        "gesture": "unknown",
+        "emotion": "unknown",
+        "emotion_confidence": 0.0,
+        "emotion_confidence_raw": 0.0,
+        "emotion_top_predictions": [],
         "confidence": 0.0,
         "confidence_raw": 0.0,
-        "top_predictions": [],
     }
 
 
-def apply_emotion_compatibility_aliases(result: dict) -> dict:
-    """ملء الحقول القديمة بقيم مبنية على ناتج مودل المشاعر فقط."""
-    emotion_value = str(result.get("emotion") or "unknown")
+def finalize_emotion_payload(result: dict) -> dict:
+    """توحيد حقول الثقة بناءً على ناتج مودل المشاعر."""
     emotion_confidence = result.get("emotion_confidence")
     emotion_confidence_raw = result.get("emotion_confidence_raw")
-    emotion_top_predictions = result.get("emotion_top_predictions") or []
-
-    result["gesture"] = emotion_value
     result["confidence"] = round(float(emotion_confidence), 2) if isinstance(emotion_confidence, (int, float)) else 0.0
     result["confidence_raw"] = float(emotion_confidence_raw) if isinstance(emotion_confidence_raw, (int, float)) else 0.0
-    result["top_predictions"] = [
+    result["emotion"] = str(result.get("emotion") or "unknown")
+    result["emotion_top_predictions"] = [
         {
-            "gesture": str(item.get("emotion") or "unknown"),
+            "emotion": str(item.get("emotion") or "unknown"),
             "confidence": round(float(item.get("confidence") or 0.0), 2),
         }
-        for item in emotion_top_predictions
+        for item in (result.get("emotion_top_predictions") or [])
         if isinstance(item, dict)
     ]
 
@@ -249,7 +220,6 @@ async def cleanup_temp_file(file_path: str):
     try:
         if os.path.exists(file_path):
             os.remove(file_path)
-            logger.info("Removed temp file: %s", file_path)
     except Exception as exc:
         logger.error("Temp file cleanup failed: %s", exc)
 
@@ -330,7 +300,6 @@ async def predict(
     - استقبال الملف
     - التحقق من حجمه ونوعه
     - حفظه مؤقتًا
-    - محاولة استخدام الكاش إن وجد
     - استخراج الخصائص وتشغيل المودل
     - إعادة النتيجة النهائية
     """
@@ -356,7 +325,7 @@ async def predict(
             detail=f"Unsupported media file type. Supported: {config.SUPPORTED_IMAGES | config.SUPPORTED_VIDEOS}",
         )
 
-    # نبني hash للملف حتى نستخدمه كمفتاح للكاش.
+    # نبني hash ثابت للملف حتى نحصل على اسم مؤقت واضح وغير متصادم.
     hash_seed = contents if emotion_vector_contents is None else contents + emotion_vector_contents
     file_hash = hashlib.md5(hash_seed).hexdigest()[:16]
     file_path = os.path.join(TEMP_DIR, f"{file_hash}{file_ext}")
@@ -367,12 +336,6 @@ async def predict(
             handle.write(contents)
 
         logger.info("Received media file: %s (%.2f KB)", original_filename, file_size / 1024)
-
-        if cache:
-            cached_result = cache.get_cached_result(file_hash)
-            if cached_result:
-                logger.info("Using cached emotion result for: %s", original_filename)
-                return JSONResponse(content=apply_emotion_compatibility_aliases(cached_result))
 
         # نبدأ بهيكل response موحد ثم نضيف عليه ناتج المودل.
         result = build_compatibility_payload(file_ext, started_at)
@@ -388,10 +351,7 @@ async def predict(
             result.update(predict_emotion_from_media_path(file_path))
 
         result["processing_time"] = round(time.time() - started_at, 2)
-        apply_emotion_compatibility_aliases(result)
-
-        if cache:
-            cache.cache_result(file_hash, result)
+        finalize_emotion_payload(result)
 
         logger.info(
             "Emotion prediction completed: %s (%s%%) in %s sec",
@@ -425,6 +385,7 @@ async def predict_emotion_vector(file: UploadFile = File(...)):
             "source": file.filename,
         }
     )
+    finalize_emotion_payload(result)
     return JSONResponse(content=result)
 
 
@@ -449,7 +410,7 @@ async def predict_batch(files: List[UploadFile] = File(...)):
 
             result = build_compatibility_payload(file_ext, time.time())
             result.update(predict_emotion_from_media_path(file_path))
-            apply_emotion_compatibility_aliases(result)
+            finalize_emotion_payload(result)
             results.append(
                 {
                     "filename": item.filename,

@@ -11,7 +11,6 @@ public function up(): void {
 Schema::create('predictions', function (Blueprint $table) {
 $table->id();
 $table->foreignId('video_id')->constrained()->onDelete('cascade');
-$table->foreignId('gesture_id')->constrained()->onDelete('cascade');
 $table->foreignId('emotion_id')->constrained()->onDelete('cascade');
 $table->float('confidence');
 $table->timestamps();

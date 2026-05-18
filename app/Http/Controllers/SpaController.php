@@ -16,8 +16,9 @@ class SpaController extends Controller
     {
         $user = Auth::user();
         $isAdmin = $user?->role === 'admin';
+
         $baseHistoryQuery = Video::query()
-            ->with(['prediction.gesture', 'prediction.emotion'])
+            ->with(['prediction.emotion'])
             ->when(!$isAdmin && $user, fn ($query) => $query->where('user_id', $user->id));
 
         $history = $user
@@ -58,6 +59,8 @@ class SpaController extends Controller
             )
             : 640;
 
+        $latestAnalysis = session('analysis_result') ?? $history->first();
+
         $boot = [
             'csrfToken' => csrf_token(),
             'path' => $request->path() === '/' ? '/' : '/' . trim($request->path(), '/'),
@@ -83,7 +86,6 @@ class SpaController extends Controller
                 'upload' => '/upload',
                 'live' => '/live',
                 'results' => '/results',
-                'dictionary' => '/dictionary',
                 'history' => '/history',
                 'settings' => '/settings',
                 'profile' => '/profile',
@@ -91,14 +93,14 @@ class SpaController extends Controller
                 'logout' => '/logout',
             ],
             'flash' => $this->getFlashMessage(),
-            'latestAnalysis' => session('analysis_result') ?? $history->first(),
+            'latestAnalysis' => $latestAnalysis,
             'history' => $history,
             'dashboard' => [
                 'stats' => [
                     'analyses' => $totalCount ?: 128,
                     'successRate' => $successRate,
                     'avgLatency' => $avgLatency,
-                    'activeModels' => 2,
+                    'activeModels' => 1,
                 ],
                 'systemStatus' => $this->systemStatus(),
             ],
@@ -193,8 +195,6 @@ class SpaController extends Controller
             'framesAnalyzed' => $framesAnalyzed,
             'latencyMs' => $latencyMs,
             'createdAt' => optional($video->created_at)->toIso8601String(),
-            'gestureKey' => $emotionKey,
-            'gestureLabel' => $emotionLabel,
             'emotionKey' => $emotionKey,
             'emotionLabel' => $emotionLabel,
             'summary' => $this->buildSummary($video, $emotionKey, $isFailure),
@@ -301,22 +301,6 @@ class SpaController extends Controller
     private function isImageFilename(string $filename): bool
     {
         return Str::endsWith(Str::lower($filename), ['.png', '.jpg', '.jpeg', '.gif']);
-    }
-
-    private function gestureLabel(string $gestureKey, ?string $fallback = null): array
-    {
-        $labels = [
-            'fine' => ['ar' => 'أنا بخير', 'en' => "I'm fine"],
-            'hello' => ['ar' => 'مرحبًا', 'en' => 'Hello'],
-            'thanks' => ['ar' => 'شكرًا', 'en' => 'Thank you'],
-            'love' => ['ar' => 'أحبك', 'en' => 'I love you'],
-            'happy' => ['ar' => 'أنا سعيد', 'en' => 'I am happy'],
-            'stop' => ['ar' => 'توقف', 'en' => 'Stop'],
-            'help' => ['ar' => 'أحتاج مساعدة', 'en' => 'I need help'],
-            'unknown' => ['ar' => $fallback ?: 'غير معروف', 'en' => $fallback ? Str::headline($fallback) : 'Unknown'],
-        ];
-
-        return $labels[$gestureKey] ?? ['ar' => $fallback ?: 'إشارة غير معروفة', 'en' => $fallback ? Str::headline($fallback) : 'Unknown sign'];
     }
 
     private function emotionLabel(string $emotionKey): array

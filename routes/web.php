@@ -27,7 +27,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/media/{video}/preview', [MediaController::class, 'preview'])->name('media.preview');
     Route::get('/live', [SpaController::class, 'show'])->name('live');
     Route::get('/results', [SpaController::class, 'show'])->name('results');
-    Route::get('/dictionary', [SpaController::class, 'show'])->name('dictionary');
     Route::get('/history', [SpaController::class, 'show'])->name('history');
     Route::get('/settings', [SpaController::class, 'show'])->name('settings');
     Route::get('/profile', [SpaController::class, 'show'])->name('profile');
