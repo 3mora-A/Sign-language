@@ -98,7 +98,7 @@ class SpaController extends Controller
                     'analyses' => $totalCount ?: 128,
                     'successRate' => $successRate,
                     'avgLatency' => $avgLatency,
-                    'activeModels' => 3,
+                    'activeModels' => 2,
                 ],
                 'systemStatus' => $this->systemStatus(),
             ],
@@ -174,14 +174,13 @@ class SpaController extends Controller
     private function transformVideo(Video $video): array
     {
         $prediction = $video->prediction;
-        $gestureValue = $this->normalizeText($prediction?->gesture?->label ?? $video->result ?? 'unknown', 'unknown');
-        $emotionValue = $this->normalizeText($prediction?->emotion?->name ?? 'unknown', 'unknown');
-        $gestureKey = Str::lower($gestureValue);
+        $emotionValue = $this->normalizeText($prediction?->emotion?->name ?? $video->result ?? 'unknown', 'unknown');
         $emotionKey = Str::lower($emotionValue);
-        $confidence = $this->normalizePercentage($prediction?->confidence);
+        $emotionLabel = $this->emotionLabel($emotionKey);
+        $confidence = $this->normalizePercentage($prediction?->emotion_confidence ?? $prediction?->confidence);
         $framesAnalyzed = max(0, (int) ($prediction?->frames_analyzed ?? 0));
         $latencyMs = max(0, (int) ($prediction?->latency_ms ?? 0));
-        $alternatives = $this->buildGestureAlternatives($video, $prediction, $gestureKey, $gestureValue, $confidence);
+        $alternatives = $this->buildEmotionAlternatives($video, $prediction, $emotionKey, $confidence);
         $isFailure = $video->status === 'failed';
 
         return [
@@ -194,30 +193,29 @@ class SpaController extends Controller
             'framesAnalyzed' => $framesAnalyzed,
             'latencyMs' => $latencyMs,
             'createdAt' => optional($video->created_at)->toIso8601String(),
-            'gestureKey' => $gestureKey,
-            'gestureLabel' => $this->gestureLabel($gestureKey, $gestureValue),
+            'gestureKey' => $emotionKey,
+            'gestureLabel' => $emotionLabel,
             'emotionKey' => $emotionKey,
-            'emotionLabel' => $this->emotionLabel($emotionKey),
-            'summary' => $this->buildSummary($video, $gestureKey, $gestureValue, $isFailure),
+            'emotionLabel' => $emotionLabel,
+            'summary' => $this->buildSummary($video, $emotionKey, $isFailure),
             'alternatives' => $alternatives,
         ];
     }
 
-    private function buildGestureAlternatives(
+    private function buildEmotionAlternatives(
         Video $video,
         ?Prediction $prediction,
-        string $gestureKey,
-        string $gestureValue,
+        string $emotionKey,
         float $confidence
     ): array {
-        $storedAlternatives = collect($prediction?->gesture_alternatives ?? [])
+        $storedAlternatives = collect($prediction?->emotion_top_predictions ?? [])
             ->map(function (array $item) {
-                $value = $this->normalizeText($item['value'] ?? 'unknown', 'unknown');
+                $value = $this->normalizeText($item['value'] ?? $item['emotion'] ?? 'unknown', 'unknown');
                 $key = Str::lower($value);
 
                 return [
                     'key' => $key,
-                    'label' => $this->gestureLabel($key, $value),
+                    'label' => $this->emotionLabel($key),
                     'confidence' => $this->normalizePercentage($item['confidence'] ?? null),
                 ];
             })
@@ -236,14 +234,14 @@ class SpaController extends Controller
 
         return [
             [
-                'key' => $gestureKey,
-                'label' => $this->gestureLabel($gestureKey, $gestureValue),
+                'key' => $emotionKey,
+                'label' => $this->emotionLabel($emotionKey),
                 'confidence' => $confidence,
             ],
         ];
     }
 
-    private function buildSummary(Video $video, string $gestureKey, string $gestureValue, bool $isFailure): array
+    private function buildSummary(Video $video, string $emotionKey, bool $isFailure): array
     {
         if ($isFailure) {
             return [
@@ -252,11 +250,11 @@ class SpaController extends Controller
             ];
         }
 
-        $gestureLabel = $this->gestureLabel($gestureKey, $gestureValue);
+        $emotionLabel = $this->emotionLabel($emotionKey);
 
         return [
-            'ar' => "تم تحليل الجلسة واكتشاف الإشارة \"{$gestureLabel['ar']}\" بنجاح.",
-            'en' => 'The session was analyzed and the sign was recognized successfully.',
+            'ar' => "تم تحليل الجلسة وتحديد الحالة الشعورية \"{$emotionLabel['ar']}\" بنجاح.",
+            'en' => "The session was analyzed and the emotional state \"{$emotionLabel['en']}\" was detected successfully.",
         ];
     }
 

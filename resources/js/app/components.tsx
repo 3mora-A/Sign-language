@@ -91,7 +91,7 @@ export function BrandMark({ compact = false }: { compact?: boolean }) {
             {!compact ? (
                 <div className="leading-tight transition-opacity group-hover:opacity-95">
                     <div className="text-xs font-bold uppercase tracking-[0.22em] text-[rgb(var(--primary-rgb)/0.75)] sm:text-sm sm:tracking-[0.28em]">Deep Learning System</div>
-                    <div className="text-lg font-extrabold text-gradient">{language === 'ar' ? 'الإشارة والمشاعر' : 'Sign & Emotion'}</div>
+                    <div className="text-lg font-extrabold text-gradient">{language === 'ar' ? 'تحليل المشاعر' : 'Emotion Analysis'}</div>
                 </div>
             ) : null}
         </Link>
@@ -621,8 +621,8 @@ export function Footer() {
                 <BrandMark compact />
                 <p className="body-soft text-sm">
                     {language === 'ar'
-                        ? 'نظام تعلم عميق متكامل لتصنيف لغة الإشارة والمشاعر — مدعوم بـ Laravel وPython.'
-                        : 'End-to-end deep learning system for sign language and emotion classification — powered by Laravel and Python.'}
+                        ? 'نظام تعلم عميق متكامل لتحليل المشاعر من الفيديو والصور، ومدعوم بـ Laravel وPython.'
+                        : 'End-to-end deep learning system for emotion analysis from video and image input, powered by Laravel and Python.'}
                 </p>
             </div>
         </footer>
@@ -842,10 +842,10 @@ export function AnalysisHeroCard({ analysis }: { analysis: AnalysisResult }) {
                 <div className="flex flex-wrap items-start justify-between gap-6">
                     <div className="max-w-2xl flex-1">
                         <p className="text-[0.6875rem] font-bold uppercase tracking-[0.2em] text-[var(--text-muted)]">
-                            {language === 'ar' ? 'الإشارة المُصنَّفة' : 'Classified sign'}
+                            {language === 'ar' ? 'الحالة الشعورية المكتشفة' : 'Detected emotional state'}
                         </p>
                         <h3 className="mt-3 text-balance text-4xl font-extrabold sm:text-5xl xl:text-6xl">
-                            {copyFor(language, analysis.gestureLabel)}
+                            {copyFor(language, analysis.emotionLabel)}
                         </h3>
                         <p className="body-soft mt-5 text-base leading-relaxed sm:text-lg">
                             {copyFor(language, analysis.summary)}
@@ -860,7 +860,7 @@ export function AnalysisHeroCard({ analysis }: { analysis: AnalysisResult }) {
 
             <div className="relative bg-black/20 p-6 sm:p-8 xl:px-10">
                 <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3 xl:gap-8 xl:items-center">
-                    <InsightRow label={language === 'ar' ? 'المشاعر' : 'Emotion'} value={copyFor(language, analysis.emotionLabel)} tone="info" />
+                    <InsightRow label={language === 'ar' ? 'الحالة الشعورية' : 'Emotional state'} value={copyFor(language, analysis.emotionLabel)} tone="info" />
                     <InsightRow label={language === 'ar' ? 'زمن التحليل' : 'Latency'} value={`${formatNumber(language, analysis.latencyMs)} ms`} tone="warning" />
                     <div className="xl:pl-4">
                         <ConfidenceBar label={language === 'ar' ? 'درجة الثقة' : 'Confidence'} value={analysis.confidence} />

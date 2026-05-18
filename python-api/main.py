@@ -224,6 +224,28 @@ def build_compatibility_payload(file_ext: str, started_at: float) -> dict:
     }
 
 
+def apply_emotion_compatibility_aliases(result: dict) -> dict:
+    """ملء الحقول القديمة بقيم مبنية على ناتج مودل المشاعر فقط."""
+    emotion_value = str(result.get("emotion") or "unknown")
+    emotion_confidence = result.get("emotion_confidence")
+    emotion_confidence_raw = result.get("emotion_confidence_raw")
+    emotion_top_predictions = result.get("emotion_top_predictions") or []
+
+    result["gesture"] = emotion_value
+    result["confidence"] = round(float(emotion_confidence), 2) if isinstance(emotion_confidence, (int, float)) else 0.0
+    result["confidence_raw"] = float(emotion_confidence_raw) if isinstance(emotion_confidence_raw, (int, float)) else 0.0
+    result["top_predictions"] = [
+        {
+            "gesture": str(item.get("emotion") or "unknown"),
+            "confidence": round(float(item.get("confidence") or 0.0), 2),
+        }
+        for item in emotion_top_predictions
+        if isinstance(item, dict)
+    ]
+
+    return result
+
+
 async def cleanup_temp_file(file_path: str):
     """حذف الملف المؤقت بعد فترة قصيرة حتى لا تتراكم الملفات على الخادم."""
     await asyncio.sleep(60)
@@ -353,7 +375,7 @@ async def predict(
             cached_result = cache.get_cached_result(file_hash)
             if cached_result:
                 logger.info("Using cached emotion result for: %s", original_filename)
-                return JSONResponse(content=cached_result)
+                return JSONResponse(content=apply_emotion_compatibility_aliases(cached_result))
 
         # نبدأ بهيكل response موحد ثم نضيف عليه ناتج المودل.
         result = build_compatibility_payload(file_ext, started_at)
@@ -369,6 +391,7 @@ async def predict(
             result.update(predict_emotion_from_media_path(file_path))
 
         result["processing_time"] = round(time.time() - started_at, 2)
+        apply_emotion_compatibility_aliases(result)
 
         if cache:
             cache.cache_result(file_hash, result)
@@ -429,6 +452,7 @@ async def predict_batch(files: List[UploadFile] = File(...)):
 
             result = build_compatibility_payload(file_ext, time.time())
             result.update(predict_emotion_from_media_path(file_path))
+            apply_emotion_compatibility_aliases(result)
             results.append(
                 {
                     "filename": item.filename,

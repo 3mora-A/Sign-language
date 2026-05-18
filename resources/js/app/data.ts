@@ -2,13 +2,13 @@ import type { FeatureCard, LocalizedText, NavItem, QuickAction, WorkflowStep } f
 import { createCopy } from './utils';
 
 export const projectTitle: LocalizedText = createCopy(
-    'نظام تعلم عميق متكامل لتصنيف لغة الإشارة والمشاعر',
-    'End-to-End Deep Learning System for Sign Language and Emotion Classification',
+    'نظام تعلم عميق متكامل لتحليل المشاعر',
+    'End-to-End Deep Learning System for Emotion Analysis',
 );
 
 export const projectShortTitle: LocalizedText = createCopy(
-    'نظام تصنيف الإشارة والمشاعر',
-    'Sign & Emotion Classification System',
+    'نظام تحليل المشاعر',
+    'Emotion Analysis System',
 );
 
 export const publicNav: NavItem[] = [
@@ -30,8 +30,8 @@ export const landingHighlights: FeatureCard[] = [
         tone: 'info',
         title: createCopy('تعلم عميق متكامل', 'End-to-end deep learning'),
         description: createCopy(
-            'خط استدلال يربط استخراج الإطارات والمعالم بشبكات عصبية عميقة لتصنيف الإشارة والمشاعر في تدفق واحد.',
-            'A unified inference pipeline links frame extraction and landmarks to deep neural networks that classify the sign and emotion in a single flow.',
+            'خط استدلال موحّد يربط معالجة الإطارات والخصائص البصرية بنموذج عميق لتحليل المشاعر في تدفق واحد.',
+            'A unified inference pipeline links frame processing and visual features to a deep model for emotion analysis in a single flow.',
         ),
     },
     {
@@ -66,8 +66,8 @@ export const workflowSteps: WorkflowStep[] = [
         icon: 'brain',
         title: createCopy('التصنيف بالتعلم العميق', 'Deep learning classification'),
         description: createCopy(
-            'نماذج عميقة تتنبأ بالإشارة وتصنّف المشاعر مع تقدير درجة الثقة والتنبؤات البديلة.',
-            'Deep models predict the sign and classify emotion, producing confidence scores and alternative predictions.',
+            'نماذج عميقة تحدد الحالة الشعورية وتقدّر درجة الثقة وتعرض التنبؤات البديلة.',
+            'Deep models identify the emotional state, estimate confidence, and surface alternative predictions.',
         ),
     },
     {
@@ -116,8 +116,8 @@ export const quickActions: QuickAction[] = [
         icon: 'upload',
         title: createCopy('استدلال جديد', 'New inference'),
         description: createCopy(
-            'ابدأ تحليلًا جديدًا لرفع عينة وتشغيل خط التعلم العميق لتصنيف الإشارة والمشاعر.',
-            'Start a new analysis to upload a sample and run the deep learning pipeline for sign and emotion classification.',
+            'ابدأ تحليلًا جديدًا لرفع عينة وتشغيل خط التعلم العميق لتحليل المشاعر.',
+            'Start a new analysis to upload a sample and run the deep learning pipeline for emotion analysis.',
         ),
     },
 ];

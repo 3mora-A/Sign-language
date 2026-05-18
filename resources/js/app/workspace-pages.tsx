@@ -102,7 +102,8 @@ function ConfidenceRing({
     const stroke = 5;
     const r = (size - stroke) / 2;
     const c = 2 * Math.PI * r;
-    const dash = c * Math.min(1, Math.max(0, value));
+    const normalizedValue = Math.max(0, Math.min(100, value)) / 100;
+    const dash = c * normalizedValue;
     return (
         <div className="relative" style={{ width: size, height: size }}>
             <svg width={size} height={size} className="-rotate-90">
@@ -126,7 +127,7 @@ function ConfidenceRing({
                 />
             </svg>
             <span className="absolute inset-0 grid place-items-center text-xs font-bold">
-                {Math.round(value * 100)}%
+                {Math.round(Math.max(0, Math.min(100, value)))}%
             </span>
         </div>
     );
@@ -238,8 +239,8 @@ export function DashboardPage() {
                     value={formatNumber(language, boot.dashboard.stats.activeModels)}
                     detail={
                         language === 'ar'
-                            ? 'نماذج تصنيف الإشارة والمشاعر وخدمات المعالجة المساندة.'
-                            : 'Sign and emotion classifiers along with supporting processing services.'
+                            ? 'نموذج تصنيف المشاعر مع خدمات المعالجة المساندة لخط التحليل.'
+                            : 'Emotion classification models with supporting processing services.'
                     }
                 />
             </div>
@@ -361,7 +362,7 @@ export function DashboardPage() {
                                                 <ConfidenceRing value={item.confidence} size={44} />
                                                 <div>
                                                     <p className="font-semibold leading-tight">
-                                                        {copyFor(language, item.gestureLabel)}
+                                                        {copyFor(language, item.emotionLabel)}
                                                     </p>
                                                     <p className="body-soft mt-1.5 line-clamp-2 text-sm">
                                                         {copyFor(language, item.summary)}
@@ -433,7 +434,7 @@ export function HistoryPage() {
             const matchesStatus = status === 'all' || entry.status === status;
             const matchesQuery =
                 !q ||
-                `${entry.fileName} ${entry.gestureLabel.ar} ${entry.gestureLabel.en}`
+                `${entry.fileName} ${entry.emotionLabel.ar} ${entry.emotionLabel.en}`
                     .toLowerCase()
                     .includes(q);
             return matchesStatus && matchesQuery;
@@ -508,8 +509,8 @@ export function HistoryPage() {
                                 className="input-shell w-full ltr:pl-11 rtl:pr-11"
                                 placeholder={
                                     language === 'ar'
-                                        ? 'ابحث باسم الملف أو الإشارة...'
-                                        : 'Search by file or sign...'
+                                        ? 'ابحث باسم الملف أو الحالة الشعورية...'
+                                        : 'Search by file or emotional state...'
                                 }
                                 value={query}
                                 onChange={(event) => setQuery(event.target.value)}
@@ -573,7 +574,7 @@ export function HistoryPage() {
                                         <div className="min-w-0 flex-1">
                                             <div className="flex flex-wrap items-center gap-3">
                                                 <h3 className="truncate text-xl font-extrabold text-white">
-                                                    {copyFor(language, entry.gestureLabel)}
+                                                    {copyFor(language, entry.emotionLabel)}
                                                 </h3>
                                                 <Badge
                                                     tone={entry.status === 'processed' ? 'success' : 'error'}
@@ -887,14 +888,13 @@ export function AdminDashboardPage() {
                         action={
                             <Badge
                                 tone="info"
-                                text={language === 'ar' ? '3 إصدارات نشطة' : '3 active'}
+                                text={language === 'ar' ? 'إصداران نشطان' : '2 active'}
                             />
                         }
                     />
                     <div className="space-y-4">
                         {[
-                            { name: 'Sign Recognition', version: 'v2.4.1', score: 0.94, tone: 'success' as const },
-                            { name: 'Emotion Classifier', version: 'v1.8.0', score: 0.88, tone: 'info' as const },
+                            { name: 'Emotion Classifier', version: 'v1.8.0', score: 0.94, tone: 'success' as const },
                             { name: 'Media Pipeline', version: 'v3.0.0', score: 0.72, tone: 'warning' as const },
                         ].map((m) => (
                             <div key={m.name} className="panel-soft rounded-2xl p-4">

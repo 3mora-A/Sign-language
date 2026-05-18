@@ -120,13 +120,13 @@ export function LandingPage() {
                         </div>
                         <h1 className="section-title mt-6 max-w-4xl">
                             {language === 'ar'
-                                ? 'نظام تعلم عميق متكامل لتصنيف لغة الإشارة والمشاعر'
-                                : 'End-to-End Deep Learning System for Sign Language and Emotion Classification'}
+                                ? 'نظام تعلم عميق متكامل لتحليل المشاعر'
+                                : 'End-to-End Deep Learning System for Emotion Analysis'}
                         </h1>
                         <p className="body-soft mt-6 max-w-3xl text-lg leading-8">
                             {language === 'ar'
-                                ? 'نظام بحثي يستقبل الفيديو أو الصورة، ويستخرج الإطارات والمعالم، ثم يشغّل شبكات عصبية عميقة للتعرف على الإشارة وتصنيف المشاعر، ويُخرج تقريرًا واضحًا بالنتيجة ودرجة الثقة والبدائل.'
-                                : 'A research-grade system that ingests video or image input, extracts frames and landmarks, runs deep neural networks for sign recognition and emotion classification, and produces a clear report with predictions, confidence, and alternatives.'}
+                                ? 'نظام بحثي يستقبل الفيديو أو الصورة، ويعالج الإطارات والخصائص البصرية، ثم يشغّل شبكات عصبية عميقة لتحليل المشاعر ويُخرج تقريرًا واضحًا بالحالة الشعورية ودرجة الثقة والبدائل.'
+                                : 'A research-grade system that ingests video or image input, processes frames and visual features, runs deep neural networks for emotion analysis, and produces a clear report with the emotional state, confidence, and alternatives.'}
                         </p>
                         <div className="mt-8 flex flex-wrap gap-3">
                             <ButtonLink to={boot.auth.isAuthenticated ? '/upload' : '/register'}>
@@ -220,7 +220,7 @@ export function LandingPage() {
                     <SectionHeading
                         eyebrow={language === 'ar' ? 'أهمية المشروع' : 'Why It Matters'}
                         title={language === 'ar' ? 'بحث تطبيقي يخدم الشمولية والوصول الرقمي للصمّ وضعاف السمع' : 'Applied research serving digital inclusion and accessibility for deaf and hard-of-hearing users'}
-                        description={language === 'ar' ? 'الهدف هو نقل أبحاث التعلم العميق من المختبر إلى أداة عملية تساعد في فهم لغة الإشارة وتفسير المشاعر المصاحبة بطريقة قابلة للقياس.' : 'The goal is to bring deep learning research out of the lab and into a practical tool that helps interpret sign language and the emotions that accompany it in a measurable way.'}
+                        description={language === 'ar' ? 'الهدف هو نقل أبحاث التعلم العميق من المختبر إلى أداة عملية تساعد في فهم الحالة الشعورية في المقاطع المرئية بطريقة قابلة للقياس.' : 'The goal is to bring deep learning research out of the lab and into a practical tool that helps interpret emotional state in visual samples in a measurable way.'}
                     />
                     <div className="mt-12 data-grid">
                         {whyItMatters.map((item) => (
@@ -297,7 +297,7 @@ export function LoginPage() {
     const [error, setError] = useState<string | null>(null);
     const [form, setForm] = useState({ email: '', password: '', remember: true });
 
-    const title = language === 'ar' ? 'الدخول إلى نظام تصنيف الإشارة والمشاعر' : 'Sign in to the Sign & Emotion Classification system';
+    const title = language === 'ar' ? 'الدخول إلى نظام تحليل المشاعر' : 'Sign in to the Emotion Analysis system';
     const subtitle =
         language === 'ar'
             ? 'سجّل دخولك للوصول إلى محرّك التحليل، السجل، والإعدادات الخاصة بحسابك.'
